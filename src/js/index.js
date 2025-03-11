@@ -2,7 +2,7 @@ const electronVersion = document.querySelector("#electron-version")
 const nodeVersion = document.querySelector("#node-version")
 const chromiumVersion = document.querySelector("#chromium-version")
 
-//let versions2 = async() => {await versions.getVersions()}
+//let versions2 = async () => await versions.getVersions()
 
 //console.log(versions2)
 

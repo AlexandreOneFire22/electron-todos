@@ -1,13 +1,15 @@
 //processus principal
 
-const {app,BrowserWindow,ipcMain} =  require("electron")
+const {app,BrowserWindow,ipcMain, Menu} =  require("electron")
 const path = require('path')
 
 //crée la fenêtre principale
 
+let window
+
 function createwindow() {
 
-    const window = new BrowserWindow({
+    window = new BrowserWindow({
         width:800,
         height:600,
         webPreferences : {
@@ -18,9 +20,58 @@ function createwindow() {
         }
     })
 
+    // Ajout du menu personnalisé
+    createMenu()
+
     window.loadFile('src/pages/index.html')
 
 }
+
+//fonction permettant de créer un menu personnalisé
+function createMenu() {
+
+    //Crée un tableau qui va représenter le menu -> modèle
+    const template = [
+        {
+          label : "App",
+          submenu : [
+              {
+                  label : "Version",
+                  click: () => window.loadFile('src/pages/index.html')
+              },
+              {
+                type: "separator"
+              },
+              {
+                  label: "Quitter",
+                  accelerator: process.platform === "darwin" ? 'cmd+Q' : 'ctrl+Q',
+                  click: () => app.quit()
+              }
+          ]
+        },
+        {
+            label: "Tâche",
+            submenu: [
+                {
+                    label: "Lister",
+                    click: () => window.loadFile('src/pages/liste-taches.html')
+                },
+                {
+                    label: "ajouter",
+                    click: () => window.loadFile('src/pages/ajout-tache.html')
+                }
+            ]
+        }
+    ]
+
+    //Créer le menu à partir du modèle
+    const menu = Menu.buildFromTemplate(template)
+
+    //Définir le menu comme étant le menu de l'application
+    Menu.setApplicationMenu(menu)
+
+}
+
 
 // Attendre l'initialisation de l'application au démarrage
 
