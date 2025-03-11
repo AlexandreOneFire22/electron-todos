@@ -1,6 +1,7 @@
 //processus principal
 
 const {app,BrowserWindow} =  require("electron")
+const path = require('path')
 
 //crée la fenêtre principale
 
@@ -10,8 +11,9 @@ function createwindow() {
         width:800,
         height:600,
         webPreferences : {
-            nodeIntegration : true, //Accès aux API Node depuis le processus de rendu (pas sécuriser en true)
-            contextIsolation : false
+            nodeIntegration : false, //Accès aux API Node depuis le processus de rendu (pas sécuriser en true)
+            contextIsolation : true,
+            preload : path.join(__dirname,'src/js/preload.js')
         }
     })
 
