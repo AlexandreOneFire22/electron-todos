@@ -1,6 +1,6 @@
 //processus principal
 
-const {app,BrowserWindow} =  require("electron")
+const {app,BrowserWindow,ipcMain} =  require("electron")
 const path = require('path')
 
 //crée la fenêtre principale
@@ -13,6 +13,7 @@ function createwindow() {
         webPreferences : {
             nodeIntegration : false, //Accès aux API Node depuis le processus de rendu (pas sécuriser en true)
             contextIsolation : true,
+            sandbox: true,
             preload : path.join(__dirname,'src/js/preload.js')
         }
     })
@@ -44,7 +45,16 @@ app.on('window-all-closed',()=> {
 })
 
 
+//Ecouter sur le canal "get-versions"
 
+ipcMain.handle("get-versions", () => {
+    //renvoyer un objet des valeurs des versions des logiciel
+    return{
+        electron : process.versions.electron,
+        node : process.versions.node,
+        chromium : process.versions.chrome
+    }
+})
 
 
 
