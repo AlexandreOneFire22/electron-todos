@@ -16,7 +16,9 @@ contextBridge.exposeInMainWorld('versions',{ //exposeInMainWorld est une méthod
 contextBridge.exposeInMainWorld('todosAPI',{ //exposeInMainWorld est une méthode qui rajoute la valeur "versions" dans "window" (comme document)
 
     //fonction qui récupère la liste des tâches via IPC (lien entre Main Process et Render Process)
-    getAll: () => ipcRenderer.invoke("todos:getAll")
+    getAll: () => ipcRenderer.invoke("todos:getAll"),
+    add: (titres) => ipcRenderer.invoke('todos:add',titres)
+
 })
 
 console.log("preload chargé avec succes")

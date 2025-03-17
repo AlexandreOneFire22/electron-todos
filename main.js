@@ -156,9 +156,6 @@ async function getAllTodos() {
     }
 }
 
-getAllTodos()
-
-
 //Ecouter sur le canal "todos:getAll"
 ipcMain.handle("todos:getAll", async () => {
     //récuperer la liste des tâches dans la base de données avec mysql
@@ -172,8 +169,31 @@ ipcMain.handle("todos:getAll", async () => {
 
 
 
+async function addTodos(titres) {
 
+    try {
+        let requete = "INSERT INTO todos (titre, termine, createdAt) VALUES "
+        titres.forEach((titre) => {
+            requete += `('${titre}',0, ${Date.now()}),`
+        })
+        requete = requete.slice(0, -1) + ";"
+        const resultat = await pool.query(requete)
+        return;   //retourne une promesse avec le resultat
+    }catch (error){
+        console.error("erreur lors de la récupération des taches")
+        throw error //retourne une promesse non résolue
+    }
+}
 
+ipcMain.handle('todos:add', async (event,titres) => {
+    //récuperer la liste des tâches dans la base de données avec mysql
+    try {
+        await addTodos(titres)  //retourne une promesse
+    }catch (error){
+        dialog.showErrorBox("Une erreur est survenue","impossible d'enregistrer les todos")
+        return []   // promesse (fonction) résolue mais avec un tableau vide
+    }
+})
 
 
 
