@@ -4,16 +4,18 @@ const {app,BrowserWindow,ipcMain, Menu, dialog} =  require("electron")
 const path = require('path')
 const mysql = require('mysql2/promise')
 
+require("dotenv").config()
+
 //crée la fenêtre principale
 let window
 
 // Configuration de l'accès à la base de données
 const dbConfig = {
-    host : 'localhost',
-    port: 3306,
-    user: 'root',
-    password : '',
-    database : 'db_todos',
+    host : process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password : process.env.DB_PASS,
+    database : process.env.DB_NAME,
     connectionLimit : 10, //Nombre maximal de connexion dans le pool
     waitForConnections : true, //autorise une fill d'attente pour les requête si les 10 sont déjà pris
     queueLimit : 0 // 0 = illimité
@@ -172,12 +174,21 @@ ipcMain.handle("todos:getAll", async () => {
 async function addTodos(titres) {
 
     try {
-        let requete = "INSERT INTO todos (titre, termine, createdAt) VALUES "
-        titres.forEach((titre) => {
-            requete += `('${titre}',0, ${Date.now()}),`
+        const today = new Date(Date.now());
+        const test2 = [today.getUTCDay(),today.getUTCMonth(),today.getFullYear()]
+        console.log(test2)
+        const test = [titres]
+        console.log(test)
+        console.log(typeof test)
+        let requete = "INSERT INTO todos (titre, termine) VALUES "
+        test.forEach((titre) => {
+            requete += `('${titre}',0),`
         })
         requete = requete.slice(0, -1) + ";"
+
+        console.log(requete)
         const resultat = await pool.query(requete)
+        window.loadFile('src/pages/liste-taches.html')
         return;   //retourne une promesse avec le resultat
     }catch (error){
         console.error("erreur lors de la récupération des taches")
@@ -187,6 +198,7 @@ async function addTodos(titres) {
 
 ipcMain.handle('todos:add', async (event,titres) => {
     //récuperer la liste des tâches dans la base de données avec mysql
+    console.log("étape 3")
     try {
         await addTodos(titres)  //retourne une promesse
     }catch (error){
